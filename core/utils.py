@@ -6,7 +6,7 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-def get_weather_data(city="London"):
+def get_weather_data(city="Bwari"):
     """
     Fetch weather data from OpenWeatherMap API
     """
