@@ -1,0 +1,195 @@
+<!-- templates/blog/post_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4">
+    <!-- Post Content -->
+    <article class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        {% if post.image %}
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-64 object-cover">
+        {% endif %}
+        <div class="p-6">
+            <div class="mb-4">
+                <h1 class="text-3xl font-bold mb-2">{{ post.title }}</h1>
+                <div class="flex items-center text-gray-500">
+                    <span>By {{ post.author.username }}</span>
+                    <span class="mx-2">•</span>
+                    <span>{{ post.created_at|date }}</span>
+                    {% if post.category %}
+                        <span class="mx-2">•</span>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                            {{ post.category.name }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="prose max-w-none">
+                {{ post.content|linebreaks }}
+            </div>
+
+            {% if user == post.author %}
+                <div class="mt-6 flex space-x-4">
+                    <a href="{% url 'blog:post_edit' post.slug %}" 
+                       class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Edit Post
+                    </a>
+                    <a href="{% url 'blog:post_delete' post.slug %}" 
+                       class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        Delete Post
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </article>
+
+    <!-- Comments Section -->
+    <section class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold mb-6">Comments ({{ post.comments.count }})</h2>
+
+        <!-- Comment Form -->
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'blog:add_comment' post.slug %}" class="mb-8">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                        Add a comment
+                    </label>
+                    <textarea name="content" id="content" rows="3" required
+                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Write your comment here..."></textarea>
+                </div>
+                <button type="submit" 
+                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Post Comment
+                </button>
+            </form>
+        {% else %}
+            <div class="bg-gray-50 rounded-md p-4 mb-8">
+                <p class="text-gray-600">
+                    Please <a href="{% url 'login' %}?next={{ request.path }}" class="text-blue-500 hover:text-blue-600">log in</a> 
+                    to add a comment.
+                </p>
+            </div>
+        {% endif %}
+
+        <!-- Comments List -->
+        <div class="space-y-6">
+            {% for comment in comments %}
+                <div class="bg-gray-50 rounded-lg p-4 {% if not forloop.last %}border-b border-gray-200{% endif %}">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="font-medium">{{ comment.author.username }}</p>
+                            <p class="text-sm text-gray-500">{{ comment.created_at|date:"F j, Y, P" }}</p>
+                        </div>
+                        {% if user == comment.author %}
+                            <div class="flex space-x-2">
+                                <button data-comment-id="{{ comment.id }}" 
+                                        class="edit-comment-btn text-blue-500 hover:text-blue-600 text-sm">
+                                    Edit
+                                </button>
+                                <form method="post" action="{% url 'blog:delete_comment' post.slug comment.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-500 hover:text-red-600 text-sm">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="comment-content">
+                        {{ comment.content|linebreaks }}
+                    </div>
+                    
+                    <!-- Reply Form - Initially Hidden -->
+                    <div class="mt-2">
+                        <button class="text-sm text-blue-500 hover:text-blue-600 reply-btn"
+                                data-comment-id="{{ comment.id }}">
+                            Reply
+                        </button>
+                        <div id="reply-form-{{ comment.id }}" class="hidden mt-4">
+                            {% if user.is_authenticated %}
+                                <form method="post" action="{% url 'blog:add_reply' post.slug comment.id %}">
+                                    {% csrf_token %}
+                                    <textarea name="content" rows="2" required
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                                        placeholder="Write your reply..."></textarea>
+                                    <div class="mt-2 flex justify-end space-x-2">
+                                        <button type="button" 
+                                                class="cancel-reply-btn text-sm text-gray-500 hover:text-gray-700">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" 
+                                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
+                                            Reply
+                                        </button>
+                                    </div>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Replies -->
+                    {% if comment.replies.exists %}
+                        <div class="ml-8 mt-4 space-y-4">
+                            {% for reply in comment.replies.all %}
+                                <div class="bg-white rounded-lg p-3 border border-gray-200">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <p class="font-medium text-sm">{{ reply.author.username }}</p>
+                                            <p class="text-xs text-gray-500">{{ reply.created_at|date:"F j, Y, P" }}</p>
+                                        </div>
+                                        {% if user == reply.author %}
+                                            <div class="flex space-x-2">
+                                                <form method="post" action="{% url 'blog:delete_reply' post.slug reply.id %}" class="inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="text-red-500 hover:text-red-600 text-xs">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-sm">{{ reply.content }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p class="text-gray-500 text-center py-4">No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle reply button clicks
+    document.querySelectorAll('.reply-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            const replyForm = document.getElementById(`reply-form-${commentId}`);
+            replyForm.classList.remove('hidden');
+            this.classList.add('hidden');
+        });
+    });
+
+    // Handle cancel reply button clicks
+    document.querySelectorAll('.cancel-reply-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const replyForm = this.closest('[id^="reply-form-"]');
+            const commentId = replyForm.id.split('-').pop();
+            const replyBtn = document.querySelector(`.reply-btn[data-comment-id="${commentId}"]`);
+            replyForm.classList.add('hidden');
+            replyBtn.classList.remove('hidden');
+        });
+    });
+});
+</script>
+{% endblock %}

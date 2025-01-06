@@ -1,0 +1,26 @@
+<!-- templates/core/weather_widget.html -->
+<div class="bg-white rounded-lg shadow-md p-4">
+   {% if weather_data %}
+       <div class="flex items-center justify-between mb-4">
+           <div>
+               <h3 class="text-lg font-semibold">{{ weather_data.city }}, {{ weather_data.country }}</h3>
+               <p class="text-sm text-gray-500">{{ weather_data.timestamp }}</p>
+           </div>
+           <img src="{{ weather_data.icon_url }}" alt="Weather icon" class="w-16 h-16">
+       </div>
+       <div class="grid grid-cols-2 gap-4">
+           <div>
+               <p class="text-3xl font-bold">{{ weather_data.temperature }}°C</p>
+               <p class="text-gray-600">{{ weather_data.description }}</p>
+           </div>
+           <div class="text-right">
+               <p class="text-sm text-gray-600">Humidity: {{ weather_data.humidity }}%</p>
+               <p class="text-sm text-gray-600">Wind: {{ weather_data.wind_speed }} m/s</p>
+           </div>
+       </div>
+   {% else %}
+       <div class="text-center text-gray-500">
+           <p>Weather data unavailable</p>
+       </div>
+   {% endif %}
+</div>

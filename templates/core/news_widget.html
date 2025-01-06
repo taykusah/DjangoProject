@@ -1,0 +1,33 @@
+<!-- templates/core/news_widget.html -->
+<div class="bg-white rounded-lg shadow-md p-4">
+   <h3 class="text-lg font-semibold mb-4">Latest News</h3>
+   
+   {% if news_data %}
+       <div class="space-y-4">
+           {% for article in news_data %}
+               <div class="{% if not forloop.last %}border-b border-gray-200 pb-4{% endif %}">
+                   {% if article.image_url %}
+                       <img src="{{ article.image_url }}" alt="{{ article.title }}" 
+                            class="w-full h-48 object-cover rounded-lg mb-2">
+                   {% endif %}
+                   <h4 class="font-medium mb-1">
+                       <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer" 
+                          class="hover:text-blue-600">
+                           {{ article.title }}
+                       </a>
+                   </h4>
+                   {% if article.description %}
+                       <p class="text-sm text-gray-600 mb-2">{{ article.description|truncatechars:100 }}</p>
+                   {% endif %}
+                   <div class="text-xs text-gray-500">
+                       <span>{{ article.source }}</span>
+                       <span class="mx-2">•</span>
+                       <span>{{ article.published_at }}</span>
+                   </div>
+               </div>
+           {% endfor %}
+       </div>
+   {% else %}
+       <p class="text-gray-500 text-center">No news available</p>
+   {% endif %}
+</div>

@@ -1,0 +1,16 @@
+<!-- templates/core/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Welcome to Web 2.0 Blog</h1>
+    {% if user.is_authenticated %}
+        <p class="text-lg">Welcome back, {{ user.username }}!</p>
+    {% else %}
+        <p class="text-lg">Please login or register to start blogging.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

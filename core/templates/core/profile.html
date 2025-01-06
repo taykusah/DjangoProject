@@ -1,0 +1,15 @@
+<!-- templates/core/profile.html -->
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Profile</h1>
+    <div class="bg-white shadow rounded-lg p-6">
+        <p class="mb-4"><strong>Username:</strong> {{ user.username }}</p>
+        <p class="mb-4"><strong>Email:</strong> {{ user.email }}</p>
+        <p class="mb-4"><strong>Date Joined:</strong> {{ user.date_joined|date }}</p>
+    </div>
+</div>
+{% endblock %}
