@@ -31,7 +31,10 @@ NEWSAPI_KEY = os.getenv('NEWSAPI_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+   'djangoproject-41al.onrender.com',
+   
+]
 
 
 # Application definition
