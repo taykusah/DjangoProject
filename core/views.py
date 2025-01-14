@@ -16,6 +16,8 @@ def register(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.profile.role = 'author'
+            user.profile.save()
             login(request, user)
             messages.success(request, 'Registration successful! Welcome to Web 2.0 Blog!')
             return redirect('home')

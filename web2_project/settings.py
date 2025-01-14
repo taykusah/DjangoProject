@@ -33,7 +33,8 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
    'djangoproject-41al.onrender.com',
-   
+   '127.0.0.1',
+    
 ]
 
 
