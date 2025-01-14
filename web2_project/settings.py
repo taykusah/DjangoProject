@@ -34,6 +34,7 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = [
    'djangoproject-41al.onrender.com',
    '127.0.0.1',
+   'localhost'
     
 ]
 
@@ -78,6 +79,22 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',  # For Render domains
+    'http://localhost:8000',   # For local development
+    'http://127.0.0.1:8000',  # For local development
+]
+
+CORS_ALLOW_ALL_ORIGINS = True  # Only for development
+CORS_ALLOWED_ORIGINS = [
+    'https://*.onrender.com',
+]
+# Cookie settings
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
